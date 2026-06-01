@@ -69,7 +69,7 @@ export async function sendViaSmtp(params: {
   subject: string;
   html: string;
   text?: string;
-  metadata?: Record<string, unknown>;
+  metadata?: Prisma.InputJsonValue;
 }) {
   const config = await resolveSmtpConfig();
   if (!config) {
@@ -120,7 +120,7 @@ export async function sendEmail(params: {
   html: string;
   text?: string;
   preferSmtp?: boolean;
-  metadata?: Record<string, unknown>;
+  metadata?: Prisma.InputJsonValue;
 }) {
   const preferSmtp = params.preferSmtp !== false;
   const smtpConfig = await resolveSmtpConfig();

@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
+declare const process: { env: Record<string, string | undefined> };
+
 const url = process.env.DATABASE_URL ?? "";
 const masked = url.replace(/:([^:@]+)@/, ":****@");
 
