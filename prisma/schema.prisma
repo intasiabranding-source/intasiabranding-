@@ -1,0 +1,457 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OtpPurpose {
+  LOGIN
+  RECOVERY
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL_SENT
+  WON
+  LOST
+}
+
+enum LeadSource {
+  CONTACT_FORM
+  CONSULTATION
+  NEWSLETTER
+  OTHER
+}
+
+enum BlogStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+}
+
+enum AnimationPreset {
+  NONE
+  FADE_UP
+  STAGGER
+  FLOAT
+  PARALLAX_LIGHT
+}
+
+enum EmailStatus {
+  SENT
+  FAILED
+  PENDING
+}
+
+model Admin {
+  id            String   @id @default(cuid())
+  primaryEmail  String   @unique
+  backupEmail   String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  auditLogs     AuditLog[]
+  loginHistory  LoginHistory[]
+}
+
+model OtpChallenge {
+  id        String     @id @default(cuid())
+  email     String
+  codeHash  String
+  purpose   OtpPurpose @default(LOGIN)
+  attempts  Int        @default(0)
+  expiresAt DateTime
+  usedAt    DateTime?
+  ipAddress String?
+  createdAt DateTime   @default(now())
+
+  @@index([email, purpose])
+  @@index([expiresAt])
+}
+
+model RateLimitEntry {
+  id        String   @id @default(cuid())
+  key       String
+  count     Int      @default(1)
+  windowEnd DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([key])
+  @@index([windowEnd])
+}
+
+model LoginHistory {
+  id           String   @id @default(cuid())
+  adminId      String?
+  admin        Admin?   @relation(fields: [adminId], references: [id])
+  email        String
+  success      Boolean
+  ipAddress    String?
+  userAgent    String?
+  deviceInfo   String?
+  createdAt    DateTime @default(now())
+
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String?
+  admin     Admin?   @relation(fields: [adminId], references: [id])
+  action    String
+  entity    String?
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+model SiteSettings {
+  id              String   @id @default("default")
+  brandName       String   @default("Digital Growth Ecosystem")
+  tagline         String?
+  contactEmail    String?
+  contactPhone    String?
+  whatsapp        String?
+  instagram       String?
+  address         String?
+  mapEmbedUrl     String?
+  gaMeasurementId String?
+  autoReplySubject String?
+  autoReplyBody   String?
+  leadNotifyEmail String?
+  otpLoginSubject   String?
+  otpLoginBody      String?  @db.Text
+  otpRecoverySubject String?
+  otpRecoveryBody    String?  @db.Text
+  useSmtpForAuth    Boolean  @default(true)
+  updatedAt       DateTime @updatedAt
+}
+
+model SiteTheme {
+  id                String          @id @default("default")
+  primaryColor      String          @default("262 83% 58%")
+  accentColor       String          @default("280 70% 60%")
+  gradientFrom      String          @default("262 83% 58%")
+  gradientTo        String          @default("280 70% 60%")
+  defaultAnimation  AnimationPreset @default(FADE_UP)
+  darkModeDefault   Boolean         @default(true)
+  updatedAt         DateTime        @updatedAt
+}
+
+model Page {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  published   Boolean       @default(true)
+  sections    PageSection[]
+  seoSettings SeoSettings?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model PageSection {
+  id              String          @id @default(cuid())
+  pageId          String
+  page            Page            @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  type            String
+  order           Int
+  content         Json
+  animationPreset AnimationPreset @default(FADE_UP)
+  published       Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([pageId, order])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String   @db.Text
+  shortDesc   String?
+  category    String
+  features    Json     @default("[]")
+  pricing     String?
+  priceNote   String?
+  ctaLabel    String   @default("Get Started")
+  ctaLink     String   @default("/contact")
+  imageUrl    String?
+  gallery     Json     @default("[]")
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  geoSummary  String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([published, order])
+}
+
+model PricingPlan {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  price       String
+  period      String   @default("/month")
+  description String?
+  features    Json     @default("[]")
+  highlighted Boolean  @default(false)
+  ctaLabel    String   @default("Choose Plan")
+  ctaLink     String   @default("/contact")
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  company   String?
+  content   String   @db.Text
+  imageUrl  String?
+  rating    Int      @default(5)
+  featured  Boolean  @default(false)
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  author    String
+  platform  String?
+  content   String   @db.Text
+  rating    Int      @default(5)
+  imageUrl  String?
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Statistic {
+  id        String   @id @default(cuid())
+  label     String
+  value     String
+  suffix    String?
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String   @db.Text
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CaseStudy {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  results     String?
+  imageUrl    String?
+  category    String?
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PortfolioItem {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  imageUrl    String?
+  link        String?
+  category    String?
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  bio       String?  @db.Text
+  imageUrl  String?
+  linkedin  String?
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TimelineEvent {
+  id        String   @id @default(cuid())
+  year      String
+  title     String
+  description String @db.Text
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BlogPost {
+  id              String     @id @default(cuid())
+  title           String
+  slug            String     @unique
+  excerpt         String?
+  content         Json
+  coverImage      String?
+  category        String?
+  tags            String[]   @default([])
+  status          BlogStatus @default(DRAFT)
+  publishedAt     DateTime?
+  scheduledFor    DateTime?
+  metaTitle       String?
+  metaDescription String?
+  authorName      String     @default("Admin")
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([slug])
+}
+
+model Lead {
+  id        String     @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  message   String?    @db.Text
+  service   String?
+  status    LeadStatus @default(NEW)
+  source    LeadSource @default(CONTACT_FORM)
+  notes     Json       @default("[]")
+  assigned  String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([email])
+}
+
+model MediaAsset {
+  id         String   @id @default(cuid())
+  publicId   String   @unique
+  url        String
+  secureUrl  String
+  filename   String
+  mimeType   String
+  size       Int?
+  width      Int?
+  height     Int?
+  folder     String   @default("general")
+  tags       String[] @default([])
+  alt        String?
+  variants   Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([folder])
+  @@index([mimeType])
+}
+
+model SeoSettings {
+  id              String  @id @default(cuid())
+  pageId          String? @unique
+  page            Page?   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  path            String  @unique
+  metaTitle       String?
+  metaDescription String? @db.Text
+  canonicalUrl    String?
+  ogTitle         String?
+  ogDescription   String? @db.Text
+  ogImage         String?
+  twitterCard     String?
+  schemaJson      Json?
+  noIndex         Boolean @default(false)
+  updatedAt       DateTime @updatedAt
+}
+
+model AeoGeoBlock {
+  id          String   @id @default(cuid())
+  type        String
+  question    String?
+  answer      String   @db.Text
+  entityName  String?
+  keywords    String[] @default([])
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  sessionId  String
+  eventType  String
+  path       String?
+  referrer   String?
+  device     String?
+  browser    String?
+  country    String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([eventType, createdAt])
+  @@index([sessionId])
+  @@index([path])
+}
+
+model SmtpProfile {
+  id           String   @id @default(cuid())
+  name         String
+  host         String
+  port         Int
+  username     String
+  passwordEnc  String
+  encryption   String   @default("TLS")
+  fromEmail    String
+  fromName     String
+  isActive     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EmailLog {
+  id        String      @id @default(cuid())
+  to        String
+  subject   String
+  status    EmailStatus
+  provider  String?
+  error     String?
+  metadata  Json?
+  createdAt DateTime    @default(now())
+
+  @@index([status, createdAt])
+}
