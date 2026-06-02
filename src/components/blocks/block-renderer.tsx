@@ -1,4 +1,4 @@
-import { PageSection } from "@prisma/client";
+import { PageSection, Service } from "@prisma/client";
 import { type BlockContent } from "@/lib/cms/blocks";
 import { HeroBlock } from "./hero-block";
 import { ServicesGridBlock } from "./services-grid-block";
@@ -18,7 +18,7 @@ import { TrustBarBlock } from "./trust-bar-block";
 import { getServices } from "@/lib/cms/fetch";
 
 export async function BlockRenderer({ sections }: { sections: PageSection[] }) {
-  const services = await getServices();
+  const services: Service[] = await getServices();
   const serviceData = services.map((s) => ({
     id: s.id,
     slug: s.slug,

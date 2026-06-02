@@ -1,5 +1,6 @@
 import { getSecurityLogs } from "@/app/actions/admin/settings";
 import { formatDate } from "@/lib/utils";
+import { AuditLog, LoginHistory } from "@prisma/client";
 
 export default async function AdminSecurityPage() {
   const { loginHistory, auditLogs } = await getSecurityLogs();
@@ -22,7 +23,7 @@ export default async function AdminSecurityPage() {
                 </tr>
               </thead>
               <tbody>
-                {loginHistory.map((log) => (
+                {loginHistory.map((log: LoginHistory) => (
                   <tr key={log.id} className="border-t">
                     <td className="p-3">{log.email}</td>
                     <td className="p-3">
@@ -41,7 +42,7 @@ export default async function AdminSecurityPage() {
         <div>
           <h2 className="font-semibold mb-4">Audit Logs</h2>
           <div className="rounded-xl border max-h-96 overflow-y-auto">
-            {auditLogs.map((log) => (
+            {auditLogs.map((log: AuditLog) => (
               <div key={log.id} className="border-b p-3 text-sm">
                 <p className="font-medium">{log.action}</p>
                 <p className="text-muted-foreground">

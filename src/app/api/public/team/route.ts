@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { TeamMember } from "@prisma/client";
 
 export async function GET() {
   try {
@@ -8,7 +9,7 @@ export async function GET() {
       orderBy: { order: "asc" },
     });
     return NextResponse.json({
-      team: team.map((m) => ({
+      team: team.map((m: TeamMember) => ({
         id: m.id,
         name: m.name,
         role: m.role,

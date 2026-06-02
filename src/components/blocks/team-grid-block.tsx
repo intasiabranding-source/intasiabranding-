@@ -23,7 +23,7 @@ export async function TeamGridBlock({
           {(content.title as string) ?? "Our Team"}
         </h2>
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {team.map((member) => (
+          {team.map((member: { id: string; name: string; role: string; bio: string | null; imageUrl: string | null }) => (
             <div key={member.id} className="text-center">
               <div className="relative mx-auto h-32 w-32 overflow-hidden rounded-2xl">
                 <Image

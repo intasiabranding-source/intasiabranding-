@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { Statistic } from "@prisma/client";
 
 export async function GET() {
   try {
@@ -8,7 +9,7 @@ export async function GET() {
       orderBy: { order: "asc" },
     });
     return NextResponse.json({
-      stats: stats.map((s) => ({
+      stats: stats.map((s: Statistic) => ({
         label: s.label,
         value: s.value,
         suffix: s.suffix,

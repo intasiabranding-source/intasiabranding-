@@ -1,8 +1,10 @@
 import { getPublishedBlogPosts } from "@/lib/cms/fetch";
 import { prisma } from "@/lib/db";
+import type { BlogPost } from "@prisma/client";
 
 export async function getPublicBlogPosts() {
-  const posts = await getPublishedBlogPosts();
+  const posts = (await getPublishedBlogPosts()) as BlogPost[];
+
   return posts.map((post) => ({
     id: post.id,
     title: post.title,
@@ -20,6 +22,7 @@ export async function getPublicBlogPost(slug: string) {
   const post = await prisma.blogPost.findFirst({
     where: { slug, status: "PUBLISHED" },
   });
+
   if (!post) return null;
 
   return {
@@ -37,3 +40,4 @@ export async function getPublicBlogPost(slug: string) {
     metaDescription: post.metaDescription,
   };
 }
+

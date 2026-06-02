@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 export default auth((req) => {
   const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
   const isLoginPage = req.nextUrl.pathname === "/admin/login";

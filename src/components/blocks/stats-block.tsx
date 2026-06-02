@@ -23,7 +23,7 @@ export async function StatsBlock({
           {(content.title as string) ?? "Our Impact"}
         </h2>
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat) => (
+          {stats.map((stat: { label: string; value: string; suffix: string | null }) => (
             <div key={stat.label} className="text-center">
               <p className="text-4xl font-bold gradient-text md:text-5xl">
                 <StatsCounter value={stat.value} suffix={stat.suffix} />

@@ -14,7 +14,22 @@ import { defaultBlockContent } from "@/lib/cms/blocks";
 
 export async function HomeFallback() {
   const services = await getServices();
-  const serviceData = services.map((s) => ({
+
+  const serviceData = services.map((s: {
+    id: string;
+    slug: string;
+    title: string;
+    description: string;
+    shortDesc: string | null;
+    category: string;
+    features: unknown;
+    pricing: string | null;
+    priceNote: string | null;
+    ctaLabel: string;
+    ctaLink: string;
+    imageUrl: string | null;
+    gallery: unknown;
+  }) => ({
     id: s.id,
     slug: s.slug,
     title: s.title,
@@ -50,3 +65,4 @@ export async function HomeFallback() {
     </>
   );
 }
+

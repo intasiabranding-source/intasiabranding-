@@ -24,7 +24,7 @@ export async function ReviewsBlock({
           {(content.title as string) ?? "Reviews"}
         </h2>
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {reviews.map((r) => (
+          {reviews.map((r: { id: string; rating: number; content: string; author: string; platform: string | null }) => (
             <div key={r.id} className="rounded-xl border bg-card p-4">
               <div className="flex gap-0.5">
                 {Array.from({ length: r.rating }).map((_, i) => (

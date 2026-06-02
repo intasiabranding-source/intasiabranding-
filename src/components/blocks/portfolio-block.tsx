@@ -25,7 +25,7 @@ export async function PortfolioBlock({
           {(content.title as string) ?? "Portfolio"}
         </h2>
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
+          {items.map((item: { id: string; imageUrl: string | null; title: string; link: string | null }) => (
             <div key={item.id} className="group relative overflow-hidden rounded-xl">
               {item.imageUrl && (
                 <div className="relative aspect-[4/3]">

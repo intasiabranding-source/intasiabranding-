@@ -6,12 +6,12 @@ import { getSiteSettings } from "@/lib/cms/fetch";
 import { Mail, Phone, MapPin } from "lucide-react";
 
 export async function ContactStripBlock({
-  content,
   preset,
 }: {
   content: BlockContent;
   preset: AnimationPreset;
 }) {
+
   const settings = await getSiteSettings();
 
   return (

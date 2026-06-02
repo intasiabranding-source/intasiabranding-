@@ -5,7 +5,8 @@ import { requireAdmin } from "@/lib/admin/require-auth";
 import { revalidateCms } from "@/lib/cms/revalidate";
 import { logAudit } from "@/lib/auth/audit";
 import { encrypt } from "@/lib/security/encrypt";
-import { sendEmail, sendTestOtpEmail, sendViaSmtp } from "@/lib/email/send";
+import { sendTestOtpEmail, sendViaSmtp } from "@/lib/email/send";
+
 import { isSmtpConfigured } from "@/lib/email/smtp-config";
 
 export async function getSettings() {

@@ -1,12 +1,15 @@
 import { getServices } from "@/lib/cms/fetch";
 import { prisma } from "@/lib/db";
+import type { Service as PrismaService } from "@prisma/client";
 
 export async function getPublicServices() {
-  const services = await getServices();
+  const services = (await getServices()) as PrismaService[];
   const plans = await prisma.pricingPlan.findMany({
     where: { published: true },
     orderBy: { order: "asc" },
   });
+
+  type PricingPlan = typeof plans[number];
 
   return {
     services: services.map((s) => ({
@@ -25,7 +28,10 @@ export async function getPublicServices() {
       gallery: (s.gallery as string[]) ?? [],
     })),
     categories: [...new Set(services.map((s) => s.category).filter(Boolean))],
-    plans: plans.map((p) => ({
+    plans: plans.map((p: PricingPlan) => ({
+
+
+
       id: p.id,
       name: p.name,
       price: p.price,

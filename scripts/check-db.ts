@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 
-declare const process: { env: Record<string, string | undefined> };
 
 const url = process.env.DATABASE_URL ?? "";
 const masked = url.replace(/:([^:@]+)@/, ":****@");
@@ -18,7 +17,8 @@ async function main() {
     console.warn("\nWARN: Neon URLs should include ?sslmode=require");
   }
 
-  const prisma = new PrismaClient();
+  const prisma = new PrismaClient(); 
+
   try {
     await prisma.$queryRaw`SELECT 1`;
     console.log("\nOK: Database connection successful.");

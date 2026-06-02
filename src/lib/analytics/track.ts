@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
-import { headers } from "next/headers";
+
 import { type Prisma } from "@prisma/client";
+
 
 export async function trackPageView(params: {
   sessionId: string;
@@ -63,9 +64,10 @@ export async function getAnalyticsSummary(days = 30) {
     },
   });
 
-  const sessions = new Set(events.map((e) => e.sessionId)).size;
-  const pageViews = events.filter((e) => e.eventType === "page_view").length;
-  const conversions = events.filter((e) => e.eventType === "conversion").length;
+  const sessions = new Set(events.map((e: { sessionId: string }) => e.sessionId)).size;
+  const pageViews = events.filter((e: { eventType: string }) => e.eventType === "page_view").length;
+  const conversions = events.filter((e: { eventType: string }) => e.eventType === "conversion").length;
+
 
   const pathCounts: Record<string, number> = {};
   const deviceCounts: Record<string, number> = {};

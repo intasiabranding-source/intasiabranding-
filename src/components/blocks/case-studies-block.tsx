@@ -24,7 +24,7 @@ export async function CaseStudiesBlock({
           {(content.title as string) ?? "Case Studies"}
         </h2>
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {cases.map((c) => (
+          {cases.map((c: { id: string; imageUrl: string | null; title: string; description: string; results: string | null }) => (
             <div key={c.id} className="group overflow-hidden rounded-xl border bg-card">
               {c.imageUrl && (
                 <div className="relative aspect-video overflow-hidden">

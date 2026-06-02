@@ -24,7 +24,7 @@ export async function TestimonialsBlock({
           {(content.title as string) ?? "What Clients Say"}
         </h2>
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((t) => (
+          {testimonials.map((t: { id: string; content: string; name: string; role: string | null; company: string | null; imageUrl: string | null }) => (
             <div key={t.id} className="glass-card rounded-xl p-6">
               <p className="text-muted-foreground">&ldquo;{t.content}&rdquo;</p>
               <div className="mt-4 flex items-center gap-3">

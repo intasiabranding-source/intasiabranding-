@@ -4,8 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { AnimatedSection } from "@/components/marketing/animated-section";
-import { AnimationPreset } from "@prisma/client";
+
 import { type BlockContent } from "@/lib/cms/blocks";
 import { ArrowRight, Star } from "lucide-react";
 
@@ -22,11 +21,10 @@ type HeroContent = {
 
 export function HeroBlock({
   content,
-  preset,
 }: {
   content: BlockContent;
-  preset: AnimationPreset;
 }) {
+
   const c = content as HeroContent;
 
   return (
@@ -136,8 +134,10 @@ function FloatingCard({
       className={`glass-card rounded-xl px-4 py-3 shadow-lg ${className}`}
       animate={{ y: [0, -8, 0] }}
       transition={{ duration: 4, repeat: Infinity, delay, ease: "easeInOut" }}
+
     >
       <p className="text-sm font-semibold">{label}</p>
     </motion.div>
   );
 }
+
