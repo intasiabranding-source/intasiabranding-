@@ -5,11 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
 }
-
-
-
 // ============================================================================
 // ENUMS
 // ============================================================================
@@ -543,7 +539,7 @@ model RateLimitEntry {
   attempts  Int      @default(1)
   count     Int      @default(0)
   windowEnd DateTime?
-  resetAt   DateTime
+  resetAt   DateTime @default(now())
   createdAt DateTime @default(now())
 
   @@index([key])
